@@ -39,7 +39,7 @@
           <div v-if="showVolume && !isMuted" class="absolute -top-14 -right-6">
             <input
               type="range"
-              min="1"
+              min="0"
               max="100"
               v-model="volume"
               @input="changeVolume"
@@ -135,12 +135,15 @@ export default {
     const isMuted = ref(false)
     const showVolume = ref(false)
     const volume = ref(100)
+    const beforeMute = ref(0)
+
     const fadeDuration = 3000
     const fadeInterval = 250
     const trackFadedIn = ref(false)
-    const beforeMute = ref(0)
-    const tmpPlaying = ref(null)
+    const numberOfFades = fadeDuration / fadeInterval
+    const deltaVolume = Math.round(100 / numberOfFades)
 
+    const tmpPlaying = ref(null)
     const currentTrackIndex = ref(0)
     const currentTrack = computed(() => {
       if (playlist.value && playlist.value.data) {
@@ -175,16 +178,13 @@ export default {
         error.value = err.message
       })
       fadeIn()
-
-      const duration = audio.value.duration
-      const delay = (duration - (fadeDuration/1000) )
-      setTimeout(fadeOut, delay)
-      console.log(`track duration: ${duration} <=> delay: ${delay}`)
     }
 
     const pauseTrack = () => {
-      isPlaying.value = false
       audio.value.pause()
+      trackFadedIn.value = false
+      isPlaying.value = false
+      // fadeOut()
     }
 
     const nextTrack = () => {
@@ -244,8 +244,6 @@ export default {
         // если трек не запущен
         const targetVolume = volume.value
         volume.value = 0
-        const numberOfFades = fadeDuration / fadeInterval
-        const deltaVolume = Math.round(100 / numberOfFades)
         const fade = () => {
           if (volume.value < 100) {
             if (volume.value + deltaVolume > targetVolume) {
@@ -268,30 +266,31 @@ export default {
       }
     }
 
-    const fadeOut = () => {
-      if (trackFadedIn.value) {// если трек запущен
-        const targetVolume = 0
-        const numberOfFades = fadeDuration / fadeInterval
-        const deltaVolume = Math.round(100 / numberOfFades)
-        const fade = () => {
-          if (volume.value > targetVolume) {
-            if (volume.value - deltaVolume < targetVolume) {
-              volume.value = targetVolume
-              return
-            }
-            volume.value -= deltaVolume
-            audio.value.volume = volume.value / 100
-            setTimeout(fade, 300)
-          } else {
-            volume.value = audio.value.volume
-            return
-          }
-        }
-        fade()
-      } else {
-        return
-      }
-    }
+    // const fadeOut = () => {
+    //   const targetVolume = 0
+    //   const fade = () => {
+    //     if (volume.value > targetVolume) {
+    //       if (volume.value - deltaVolume <= targetVolume) {
+    //         volume.value = targetVolume
+    //         audio.value.volume = volume.value / 100
+    //         return
+    //       }
+    //       volume.value -= deltaVolume
+    //       audio.value.volume = volume.value / 100
+    //       setTimeout(fade, 300)
+    //     } else {
+    //       audio.value.volume = targetVolume
+    //       volume.value = targetVolume
+    //     }
+    //     if (audio.value.volume === targetVolume) {
+    //       trackFadedIn.value = false
+    //       isPlaying.value = false
+    //     }
+    //     return
+    //   }
+    //   fade()
+    //   return
+    // }
 
     onMounted(() => {
       audio.value.volume = volume.value / 100
@@ -336,7 +335,7 @@ export default {
       toggleMute,
       uri,
       fadeIn,
-      fadeOut
+      // fadeOut
     }
   }
 }
