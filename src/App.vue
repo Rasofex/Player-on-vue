@@ -46,6 +46,7 @@
               class="bg-black rounded-md appearance-none cursor-pointer dark:bg-white -rotate-90 w-20"
             />
           </div>
+          <!-- Недослайдер -->
         </div>
         <IconButton @click="prevTrack">
           <Icon size="32">
@@ -91,6 +92,8 @@
 
 <script>
 import { computed, onMounted, ref } from 'vue'
+import axios from 'axios'
+
 import {
   PauseCircle,
   PlayCircle,
@@ -102,10 +105,9 @@ import {
   VolumeMute,
   VolumeOff
 } from '@vicons/ionicons5'
-
 import { Icon } from '@vicons/utils'
+
 import IconButton from '@/components/IconButton.vue'
-import axios from 'axios'
 import PageLoader from './components/PageLoader.vue'
 
 export default {
@@ -241,7 +243,6 @@ export default {
 
     const fadeIn = () => {
       if (!trackFadedIn.value) {
-        // если трек не запущен
         const targetVolume = volume.value
         volume.value = 0
         const fade = () => {
@@ -334,7 +335,7 @@ export default {
       changeVolume,
       toggleMute,
       uri,
-      fadeIn,
+      fadeIn
       // fadeOut
     }
   }
