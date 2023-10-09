@@ -254,16 +254,12 @@ export default {
             volume.value += deltaVolume
             audio.value.volume = volume.value / 100
             setTimeout(fade, 300)
-            return
           } else {
             volume.value = audio.value.volume
-            return
           }
         }
         fade()
         trackFadedIn.value = true
-      } else {
-        return
       }
     }
 
