@@ -13,7 +13,7 @@ import { defineComponent } from 'vue'
 import { Icon } from '@vicons/utils'
 import { LoadingOutlined } from '@vicons/antd'
 
-export default defineComponent ({
+export default defineComponent({
   name: 'PageLoader',
   components: {
     Icon,
